@@ -1,0 +1,27 @@
+[package]
+name = "orbit-catch"
+version = "0.1.0"
+edition = "2026"
+authors = ["nyamuniga"]
+description = "A rhythm and timing-based deep space game."
+
+[[bin]]
+name = "orbit-catch"
+path = "src/main.rs"
+
+[package.metadata.bundle]
+name = "Orbit Catch"
+identifier = "com.nyamuniga.orbitcatch"
+icon = ["assets/icon.icns"]
+version = "0.1.0"
+short_description = "A rhythm and timing-based deep space game."
+long_description = "Catch moons as they orbit a central sun. Match the rhythm and timing to grow your score. Miss too many and the game ends."
+category = "public.app-category.games"
+osx_minimum_system_version = "10.14"
+
+[dependencies]
+dirs = "6.0.0"
+image = "0.25.10"
+macroquad = { version = "0.4.15", features = ["audio"] }
+rand = "0.10.1"
+
