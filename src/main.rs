@@ -1,8 +1,9 @@
 mod render;
 mod state;
 mod systems;
+mod utils;
 
-use macroquad::audio::{Sound, load_sound_from_bytes};
+use macroquad::audio::load_sound_from_bytes;
 use macroquad::miniquad::conf::Icon;
 use macroquad::prelude::*;
 use state::GameState;
@@ -50,12 +51,21 @@ async fn main() {
         .unwrap();
 
     loop {
-        // Keep sun centered even if window resizes
-        game_state.sun.position = vec2(screen_width() / 2.0, screen_height() / 2.0);
+        let (lw, lh) = utils::logical_size();
+        let camera = Camera2D {
+            zoom: vec2(1.0 / (lw / 2.0), 1.0 / (lh / 2.0)),
+            target: vec2(lw / 2.0, lh / 2.0),
+            ..Default::default()
+        };
+        set_camera(&camera);
+
+        // Keep sun centered dynamically
+        game_state.sun.position = vec2(lw / 2.0, lh / 2.0);
 
         systems::update(&mut game_state, &chime);
         render::draw(&game_state);
 
+        set_default_camera();
         next_frame().await
     }
 }

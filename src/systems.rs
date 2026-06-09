@@ -1,12 +1,15 @@
 use crate::state::{AppState, GameState, Moon, MoonState, Pulse};
+use crate::utils::{logical_size, virtual_mouse};
 use macroquad::audio::{PlaySoundParams, Sound, play_sound};
 use macroquad::prelude::*;
 use std::f32::consts::PI;
 
 pub fn update(state: &mut GameState, chime: &Sound) {
     let dt = get_frame_time();
+    let (lw, lh) = logical_size();
 
-    let mouse_pos = mouse_position();
+    let mouse_vec = virtual_mouse();
+    let mouse_pos = (mouse_vec.x, mouse_vec.y);
     let is_clicked = is_mouse_button_pressed(MouseButton::Left);
     let is_down = is_mouse_button_down(MouseButton::Left);
 
@@ -19,7 +22,7 @@ pub fn update(state: &mut GameState, chime: &Sound) {
         AppState::InGame => {
             // Check Pause button click
             if is_clicked {
-                if mouse_pos.0 >= screen_width() - 60.0 && mouse_pos.1 <= 60.0 {
+                if mouse_pos.0 >= lw - 60.0 && mouse_pos.1 <= 60.0 {
                     state.app_state = AppState::Paused;
                     return;
                 }
@@ -35,7 +38,7 @@ pub fn update(state: &mut GameState, chime: &Sound) {
             }
 
             let clicked_gameplay = (is_clicked
-                && !(mouse_pos.0 >= screen_width() - 60.0 && mouse_pos.1 <= 60.0))
+                && !(mouse_pos.0 >= lw - 60.0 && mouse_pos.1 <= 60.0))
                 || is_key_pressed(KeyCode::Space);
 
             if clicked_gameplay && state.sun.pulse_cooldown <= 0.0 {
@@ -159,14 +162,14 @@ pub fn update(state: &mut GameState, chime: &Sound) {
                 state.app_state = AppState::InGame;
             }
 
-            let cx = screen_width() / 2.0;
-            let cy = screen_height() / 2.0;
+            let cx = lw / 2.0;
+            let cy = lh / 2.0;
 
             if is_clicked {
                 if mouse_pos.0 > cx - 100.0
                     && mouse_pos.0 < cx + 100.0
-                    && mouse_pos.1 > cy + 100.0
-                    && mouse_pos.1 < cy + 150.0
+                    && mouse_pos.1 > cy + 150.0
+                    && mouse_pos.1 < cy + 200.0
                 {
                     state.app_state = AppState::InGame;
                 }
@@ -195,6 +198,13 @@ pub fn update(state: &mut GameState, chime: &Sound) {
                         state.difficulty_multiplier = 2.0;
                     }
                 }
+
+                let radar_y = cy + 90.0;
+                if mouse_pos.1 > radar_y && mouse_pos.1 < radar_y + 30.0 {
+                    if mouse_pos.0 > cx - 30.0 && mouse_pos.0 < cx + 70.0 {
+                        state.show_radar = !state.show_radar;
+                    }
+                }
             }
         }
         AppState::GameOver => {
@@ -206,8 +216,9 @@ pub fn update(state: &mut GameState, chime: &Sound) {
 }
 
 fn spawn_moon(state: &mut GameState) {
+    let (lw, lh) = logical_size();
     let angle = macroquad::rand::gen_range(0.0, PI * 2.0);
-    let dist = screen_width().max(screen_height()) * 0.7;
+    let dist = lw.max(lh) * 0.7;
     let pos = state.sun.position + vec2(angle.cos(), angle.sin()) * dist;
 
     let offset_angle: f32 = macroquad::rand::gen_range(-0.2, 0.2);

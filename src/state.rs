@@ -2,6 +2,8 @@ use macroquad::prelude::*;
 use std::fs;
 use std::path::PathBuf;
 
+use crate::utils::logical_size;
+
 #[derive(PartialEq)]
 pub enum AppState {
     MainMenu,
@@ -56,14 +58,16 @@ pub struct GameState {
     pub high_score: u32,
     pub sound_volume: f32,
     pub difficulty_multiplier: f32,
+    pub show_radar: bool,
 }
 
 impl GameState {
     pub fn new() -> Self {
+        let (lw, lh) = logical_size();
         let mut state = Self {
             app_state: AppState::MainMenu,
             sun: Sun {
-                position: vec2(screen_width() / 2.0, screen_height() / 2.0),
+                position: vec2(lw / 2.0, lh / 2.0),
                 radius: 30.0,
                 pulse_cooldown: 0.0,
             },
@@ -89,6 +93,7 @@ impl GameState {
             high_score: 0,
             sound_volume: 1.0,
             difficulty_multiplier: 1.0,
+            show_radar: true,
         };
 
         state.load_high_score();
