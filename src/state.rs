@@ -45,6 +45,12 @@ pub struct Ring {
     pub speed_multiplier: f32,
 }
 
+pub struct Star {
+    pub position: Vec2,
+    pub size: f32,
+    pub seed: f32,
+}
+
 pub struct GameState {
     pub app_state: AppState,
     pub sun: Sun,
@@ -53,6 +59,9 @@ pub struct GameState {
     pub rings: Vec<Ring>,
     pub score: u32,
     pub spawn_timer: f32,
+
+    // Background Elements
+    pub stars: Vec<Star>,
 
     // New Settings
     pub high_score: u32,
@@ -90,11 +99,26 @@ impl GameState {
             score: 0,
             spawn_timer: 0.0,
 
+            stars: Vec::new(),
+
             high_score: 0,
             sound_volume: 1.0,
             difficulty_multiplier: 1.0,
             show_radar: true,
         };
+
+        // Generate stars
+        let (lw, lh) = logical_size();
+        for _ in 0..150 {
+            state.stars.push(Star {
+                position: vec2(
+                    macroquad::rand::gen_range(0.0, lw.max(lh) * 1.5),
+                    macroquad::rand::gen_range(0.0, lw.max(lh) * 1.5),
+                ),
+                size: macroquad::rand::gen_range(0.5, 2.0),
+                seed: macroquad::rand::gen_range(0.0, std::f32::consts::PI * 2.0),
+            });
+        }
 
         state.load_high_score();
         state

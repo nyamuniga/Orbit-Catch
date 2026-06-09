@@ -6,6 +6,15 @@ pub fn draw(state: &GameState) {
     let (lw, lh) = logical_size();
     clear_background(Color::new(0.02, 0.02, 0.05, 1.0));
 
+    // --- Draw Background Elements ---
+    let time = macroquad::time::get_time() as f32;
+    
+    // Stars
+    for star in &state.stars {
+        let alpha = ((time + star.seed).sin() * 0.5 + 0.5) * 0.8;
+        draw_circle(star.position.x, star.position.y, star.size, Color::new(1.0, 1.0, 1.0, alpha));
+    }
+
     match state.app_state {
         AppState::MainMenu => {
             let title = "ORBIT CATCH";
