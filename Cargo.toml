@@ -25,3 +25,5 @@ image = "0.25.10"
 macroquad = { version = "0.4.15", features = ["audio"] }
 rand = "0.10.1"
 
+[profile.release]
+debug = true
